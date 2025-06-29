@@ -1,0 +1,74 @@
+version: '3.8'  # Docker Compose file format version
+
+services:
+  # -----------------------------
+  # 🗃️ PostgreSQL Database for Airflow metadata
+  # -----------------------------
+  postgres:
+    image: postgres:13  # Official PostgreSQL image
+    environment:
+      POSTGRES_USER: airflow            # Airflow DB username
+      POSTGRES_PASSWORD: airflow        # Airflow DB password
+      POSTGRES_DB: airflow              # Airflow metadata DB name
+    # Add volumes or ports here if needed
+    # Example: ports: ["5432:5432"]
+
+  # -----------------------------
+  # 🌐 Airflow Webserver
+  # -----------------------------
+  webserver:
+    image: apache/airflow:2.9.1  # Official Airflow image from Apache
+    depends_on:
+      - postgres  # Ensures the database starts before webserver
+    env_file:
+      - ../.env  # Load AWS credentials and FERNET_KEY securely from .env
+    environment:
+      AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY}  # For secure secret encryption
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor    # Use local executor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"     # Prevent loading example DAGs
+
+      # AWS credentials for DAGs or Spark jobs (optional in Airflow)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+    
+    volumes:
+      - ../dags:/opt/airflow/dags                 # Mount your DAGs
+      - ../requirements.txt:/requirements.txt     # Mount requirements file for pip install
+
+    command: >
+      bash -c "pip install -r /requirements.txt && airflow webserver"
+      # First install all Python packages listed in requirements.txt
+      # Then start the Airflow webserver
+
+  # -----------------------------
+  # ⏱️ Airflow Scheduler
+  # -----------------------------
+  scheduler:
+    image: apache/airflow:2.9.1  # Same image as webserver
+    depends_on:
+      - postgres
+    env_file:
+      - ../.env
+    environment:
+      AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY}
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+    
+    volumes:
+      - ../dags:/opt/airflow/dags                 # Mount your DAGs
+      - ../requirements.txt:/requirements.txt     # Mount requirements file
+
+    command: >
+      bash -c "pip install -r /requirements.txt && airflow scheduler"
+      # Install Python dependencies and run the Airflow scheduler
+
+  # Optionally you can add flower, triggerer, worker, etc.
+  # flower:
+  #   image: apache/airflow:2.9.1
+  #   ...

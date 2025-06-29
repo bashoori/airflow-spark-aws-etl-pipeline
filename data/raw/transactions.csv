@@ -1,0 +1,11 @@
+transaction_id,customer_id,transaction_date,amount_usd,payment_method,status,product_category
+TXN001,CUST1001,2025-06-25,49.99,Credit Card,Success,Electronics
+TXN002,CUST1002,2025-06-25,24.50,PayPal,Success,Books
+TXN003,CUST1003,2025-06-25,12.00,Credit Card,Failed,Toys
+TXN004,CUST1001,2025-06-26,8.99,Debit Card,Success,Grocery
+TXN005,CUST1004,2025-06-26,120.75,Credit Card,Success,Fashion
+TXN006,CUST1002,2025-06-26,42.00,Crypto,Failed,Home Decor
+TXN007,CUST1005,2025-06-27,199.00,Credit Card,Success,Electronics
+TXN008,CUST1003,2025-06-27,5.25,PayPal,Success,Books
+TXN009,CUST1006,2025-06-27,16.50,Debit Card,Failed,Toys
+TXN010,CUST1001,2025-06-27,74.90,Credit Card,Success,Fashion

@@ -1,0 +1,7 @@
+streamlit
+pandas
+boto3
+pyarrow
+s3fs
+python-dotenv
+pyspark==3.5.1
