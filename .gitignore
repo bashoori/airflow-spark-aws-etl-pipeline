@@ -1,0 +1,42 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environments
+.venv/
+env/
+venv/
+
+# Ignore environment variables
+.env
+
+# Ignore PySpark / Spark logs and temp files
+*.log
+*.out
+*.class
+spark-warehouse/
+metastore_db/
+derby.log
+
+# VSCode / IDE files
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Parquet files (optional)
+*.parquet
+
+# Ignore data directories (optional if you use raw/processed folders locally)
+data/
+
+# Ignore AWS CLI cache (optional)
+.aws/
+
+# Ignore Streamlit secrets (if used)
+.streamlit/secrets.toml

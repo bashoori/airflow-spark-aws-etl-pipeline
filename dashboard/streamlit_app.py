@@ -32,7 +32,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------
-# 🧾 Dashboard Title
+# 🧾 Title
 # -----------------------------
 st.markdown("<h1>📊 Smart Transactions Dashboard</h1>", unsafe_allow_html=True)
 
@@ -47,19 +47,19 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
 BUCKET = os.getenv("AWS_S3_BUCKET")
 
-# Set credentials for s3fs
+# Set S3 credentials for pyarrow/s3fs
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 os.environ["AWS_DEFAULT_REGION"] = AWS_REGION
 
 # -----------------------------
-# 📦 Path to cleaned Parquet file
+# 📦 Define S3 Parquet path
 # -----------------------------
 PARQUET_KEY = "processed/cleaned_transactions/"
 s3_path = f"s3://{BUCKET}/{PARQUET_KEY}"
 
 # -----------------------------
-# 📥 Load Data
+# 📥 Load Parquet data from S3
 # -----------------------------
 try:
     df = pd.read_parquet(s3_path, engine="pyarrow")
@@ -67,11 +67,11 @@ except Exception as e:
     st.error(f"❌ Failed to load data from:\n{s3_path}\n\n{e}")
     st.stop()
 
-# Ensure correct types
+# Convert transaction_date to datetime
 if "transaction_date" in df.columns:
     df["transaction_date"] = pd.to_datetime(df["transaction_date"])
 
-# Lowercase column names (important for consistency)
+# Normalize column names to lowercase
 df.columns = [col.lower() for col in df.columns]
 
 # -----------------------------
@@ -89,7 +89,7 @@ with st.sidebar:
         date_range = st.date_input("Transaction Date Range", [min_date, max_date])
 
 # -----------------------------
-# 🧼 Apply filters
+# 🧼 Apply Filters
 # -----------------------------
 df_filtered = df[df["product_category"].isin(selected_categories)]
 
@@ -100,36 +100,38 @@ if "transaction_date" in df.columns and len(date_range) == 2:
     ]
 
 # -----------------------------
-# 📊 Layout: Left & Right Columns
+# 📊 Layout: 2 Columns
 # -----------------------------
 left_col, right_col = st.columns([1, 2.5])
 
 # -----------------------------
-# ⬅️ LEFT COLUMN
+# ⬅️ LEFT COLUMN - Summary + Map
 # -----------------------------
 with left_col:
     st.subheader("📈 Summary")
 
+    # Transaction count
     st.markdown(f"<h3>Total Transactions: {len(df_filtered):,}</h3>", unsafe_allow_html=True)
 
-    # 🎨 Total Revenue Color Box
+    # Total revenue inside a gradient box
     total_revenue = df_filtered["amount_usd"].sum()
     st.markdown(f"""
         <div style='
             padding: 20px;
             border-radius: 12px;
             background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: white;
-            font-size: 26px;
+            color: black;
+            font-size: 36px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 20px;
+            border: 2px solid #888;
         '>
             💰 Total Revenue: ${total_revenue:,.2f}
         </div>
     """, unsafe_allow_html=True)
 
-    # 🏅 Top Customers
+    # Top 5 customers by revenue
     st.subheader("🏅 Top 5 Customers")
     top_customers = (
         df_filtered.groupby("customer_id")["amount_usd"]
@@ -141,7 +143,7 @@ with left_col:
     )
     st.dataframe(top_customers, use_container_width=True)
 
-    # 🗺️ Map
+    # Map of transactions
     st.subheader("🗺️ Transactions Map")
     if {"latitude", "longitude"}.issubset(df_filtered.columns):
         df_map = df_filtered.dropna(subset=["latitude", "longitude"])
@@ -153,9 +155,10 @@ with left_col:
         st.warning("⚠️ Missing required columns: 'latitude' or 'longitude'.")
 
 # -----------------------------
-# ➡️ RIGHT COLUMN
+# ➡️ RIGHT COLUMN - Visualizations
 # -----------------------------
 with right_col:
+    # Pie chart: Revenue by product
     st.subheader("📦 Revenue by Product Category")
     pie1 = px.pie(
         df_filtered,
@@ -163,29 +166,41 @@ with right_col:
         values="amount_usd",
         hole=0.3,
         title="Revenue by Product",
-        height=700  # 🆕 Bigger size
+        height=800  # Bigger pie chart
     )
     pie1.update_traces(textposition='inside', textinfo='percent+label')
+    # 📍 Make legend bigger and move it closer
+    pie1.update_layout(
+        legend=dict(
+            font=dict(size=28),
+            orientation="v",
+            x=1.02,   # Shift closer to chart
+            y=0.3,
+            xanchor='left',
+            yanchor='middle'
+        )
+    )
+
     st.plotly_chart(pie1, use_container_width=True)
 
-    # 🆕 Bar Chart: Transactions by Week
-    st.subheader("📅 Transactions by Week (Bar Chart)")
+    # Bar chart: Transactions by day
+    st.subheader("📅 Transactions by Day (Bar Chart)")
     if "transaction_date" in df_filtered.columns:
-        df_filtered["week"] = df_filtered["transaction_date"].dt.isocalendar().week
-        week_counts = df_filtered["week"].value_counts().sort_index().reset_index()
-        week_counts.columns = ["Week", "Count"]
-        bar_week = px.bar(
-            week_counts,
-            x="Week",
+        df_filtered["day"] = df_filtered["transaction_date"].dt.date
+        day_counts = df_filtered["day"].value_counts().sort_index().reset_index()
+        day_counts.columns = ["Date", "Count"]
+        bar_day = px.bar(
+            day_counts,
+            x="Date",
             y="Count",
-            title="Weekly Transactions",
-            labels={"Count": "Number of Transactions", "Week": "ISO Week"},
-            height=400
+            title="Daily Transactions",
+            labels={"Count": "Number of Transactions", "Date": "Transaction Date"},
+            height=550  # Compact bar chart
         )
-        st.plotly_chart(bar_week, use_container_width=True)
+        st.plotly_chart(bar_day, use_container_width=True)
 
 # -----------------------------
-# ⬇️ CSV Download
+# 📥 CSV Download
 # -----------------------------
 st.markdown("### 📥 Download Filtered CSV")
 st.download_button(
@@ -196,7 +211,7 @@ st.download_button(
 )
 
 # -----------------------------
-# 📂 Show Raw Data
+# 📂 Raw Data Viewer
 # -----------------------------
 with st.expander("🔍 Show Raw Data"):
     st.dataframe(df_filtered, use_container_width=True)
