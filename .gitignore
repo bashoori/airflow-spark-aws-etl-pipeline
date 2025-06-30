@@ -39,4 +39,4 @@ data/
 .aws/
 
 # Ignore Streamlit secrets (if used)
-.streamlit/secrets.toml
+.streamlit/secrets.toml.env
