@@ -62,6 +62,11 @@ A company receives daily retail transactions and wants to:
 
 The pipeline processes this data end-to-end, enabling analysts to view insights through an interactive dashboard.
 
+## 📊 Architecture Overview
+
+![Architecture Diagram](https://github.com/bashoori/repo/airflow-spark-aws-etl-pipeline/img1.png)
+
+
 ---
 
 ## 📂 Folder Structure
