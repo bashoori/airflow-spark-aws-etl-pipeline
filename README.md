@@ -66,7 +66,7 @@ The pipeline processes this data end-to-end, enabling analysts to view insights 
 
 ## 📊 Architecture Overview
 
-![Architecture Diagram](https://github.com/bashoori/repo/blob/airflow-spark-aws-etl-pipeline/img1.png)
+![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img1.png)
 
 ---
 
