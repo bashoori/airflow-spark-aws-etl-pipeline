@@ -43,9 +43,7 @@ A company receives thousands of daily retail transactions in CSV and JSON format
 This project simulates that entire flow with automation, cloud-native tools, and real-time visualizations.
 
 ## 📊 Architecture Overview
-
 ![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img2.png)
-
 ---
 
 ## 🧪 ETL Pipeline Workflow
