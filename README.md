@@ -38,6 +38,8 @@ This project showcases a modern ETL pipeline that:
 - Stores processed data in **AWS S3** and/or **Redshift**
 - Provides interactive visualizations with **Streamlit**
 
+![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img2.png)
+
 ---
 
 ## 🧱 Tech Stack
@@ -64,8 +66,7 @@ The pipeline processes this data end-to-end, enabling analysts to view insights 
 
 ## 📊 Architecture Overview
 
-![Architecture Diagram](https://github.com/bashoori/repo/airflow-spark-aws-etl-pipeline/img1.png)
-
+![Architecture Diagram](https://github.com/bashoori/repo/blob/airflow-spark-aws-etl-pipeline/img1.png)
 
 ---
 
