@@ -1,149 +1,127 @@
-# Airflow + Spark + AWS ETL Pipeline 🚀
+# 🚀 Airflow + Spark + AWS ETL Pipeline  
+## 📊 Smart Transactions Dashboard – Real-Time Analytics on the Cloud
 
-## 📊 Smart Transactions Dashboard
-
-A professional, interactive data dashboard built with **Streamlit**, **Plotly**, and **Pandas**, designed to visualize customer transaction data from AWS S3 in real-time. This dashboard is ideal for business intelligence and financial insight teams.
-
----
-
-## 🚀 Features
-
-- 🔍 **Dynamic filters** (category, date range)
-- 💰 **Total revenue summary** with visual emphasis
-- 🥇 **Top 5 customers** by total spend
-- 📦 **Revenue by product category** (pie chart)
-- 📅 **Transactions by ISO week** (bar chart)
-- 🌍 **Transaction map** (with geolocation)
-- ⬇️ **Download filtered data as CSV**
-- 🧾 **Expandable raw data preview**
+A fully automated, cloud-native data pipeline built using **Apache Airflow**, **PySpark**, **AWS S3**, and **Streamlit**. This project showcases how real-world retail transaction data can be ingested, transformed, monitored, and visualized — all in a scalable, production-style architecture.
 
 ---
 
-## 🧱 Tech Stack
+## 🔍 Key Features
 
-- **Frontend**: [Streamlit](https://streamlit.io/)  
-- **Visualization**: [Plotly](https://plotly.com/python/)  
-- **Data Processing**: [Pandas](https://pandas.pydata.org/)  
-- **Cloud Storage**: AWS S3  
-- **Environment Management**: `dotenv` for secrets  
-- **Data Format**: Parquet (via PyArrow)
----
-
-## 🔍 Project Overview
-
-This project showcases a modern ETL pipeline that:
-- Ingests raw retail transaction data (CSV)
-- Cleans and transforms the data using **PySpark**
-- Automates the pipeline with **Apache Airflow**
-- Stores processed data in **AWS S3** and/or **Redshift**
-- Provides interactive visualizations with **Streamlit**
-
-![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img2.png)
+- 🔍 Dynamic filters (product category & date range)
+- 💰 Total revenue KPIs
+- 🥇 Top 5 customers by spend
+- 📦 Revenue by product category (pie chart)
+- 📅 Daily/weekly transaction volume (bar chart)
+- 🌍 Transaction map using geolocation
+- ⬇️ Download filtered data as CSV
+- 🧾 Expandable raw data preview
 
 ---
 
-## 🧱 Tech Stack
+## 🧱 Tech Stack Overview
 
-| Layer          | Technology |
-|----------------|------------|
-| Orchestration  | Apache Airflow |
-| Processing     | PySpark |
-| Cloud Storage  | AWS S3, Redshift |
-| Visualization  | Streamlit |
-| Dev Environment| Docker |
-| Extras         | Pandas, GitHub Actions, CI/CD ready |
+| Layer              | Technology                         |
+|--------------------|-------------------------------------|
+| **Orchestration**  | Apache Airflow (Dockerized)         |
+| **Data Processing**| PySpark 3.5.1                        |
+| **Storage**        | AWS S3 (Parquet via PyArrow)        |
+| **Visualization**  | Streamlit + Plotly                  |
+| **Environment**    | Docker + Docker Compose             |
+| **Utilities**      | Python-dotenv, boto3, s3fs          |
 
 ---
 
 ## 📈 Business Scenario
 
-A company receives daily retail transactions and wants to:
-- Track sales by product category and customer
-- Identify failed payments
-- Aggregate revenue per day
+A company receives thousands of daily retail transactions in CSV and JSON formats. Their goals:
 
-The pipeline processes this data end-to-end, enabling analysts to view insights through an interactive dashboard.
+- Monitor revenue by product category  
+- Track sales trends and customer behavior  
+- Identify failed transactions  
+- Present insights in a clean dashboard for stakeholders
+
+This project simulates that entire flow with automation, cloud-native tools, and real-time visualizations.
 
 ## 📊 Architecture Overview
 
-![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img1.png)
+![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img2.png)
 
 ---
 
-## 📂 Folder Structure
+## 🧪 ETL Pipeline Workflow
+
+```text
+        ┌──────────────────────────┐
+        │   Raw Transactions (CSV) │
+        └────────────┬─────────────┘
+                     │
+         [PySpark Job: clean_transform.py]
+                     │
+        ┌────────────▼────────────┐
+        │   Cleaned Transactions  │
+        │     (Parquet on S3)     │
+        └────────────┬────────────┘
+                     │
+              [Airflow DAG Scheduler]
+                     │
+        ┌────────────▼────────────┐
+        │   Streamlit Dashboard   │
+        │   (Customer KPIs & Maps)│
+        └─────────────────────────┘
+```
+
+##  📂 Project Structure
 
 ```
-airflow-spark-aws-etl-pipeline/
+ airflow-spark-aws-etl-pipeline/
 ├── dags/               → Airflow DAGs
-├── spark_jobs/         → PySpark data processing scripts
-├── data/               → Raw & processed data samples
-├── docker/             → Docker + Airflow setup
+├── spark_jobs/         → PySpark ETL scripts
 ├── dashboard/          → Streamlit dashboard app
-├── docs/               → Architecture diagrams & notes
+├── docker/             → Docker Compose + setup files
+├── data/               → Sample raw/processed data
+├── docs/               → Diagrams, notes, architecture
 ├── requirements.txt    → Python dependencies
 ├── .gitignore
 └── README.md
 ```
 
-## Architecture Diagram (Visual Overview)
+## 💻 How to Run the Project
+
+Before you begin, make sure you have Docker installed and a valid .env file with AWS and SMTP credentials.
+
+### 1️⃣ Set up and launch Dockerized environment
+
 ```
-        ┌──────────────────────────┐
-        │   Sample CSV (raw data)  │
-        └────────────┬─────────────┘
-                     │
-             [Spark Job: clean_transform.py]
-                     │
-        ┌────────────▼────────────┐
-        │   Cleaned Transactions  │
-        │     (Parquet format)    │
-        └────────────┬────────────┘
-                     │
-              [Airflow DAG Task]
-                     │
-        ┌────────────▼────────────┐
-        │   Load to AWS S3        │
-        │   Optional: Redshift    │
-        └────────────┬────────────┘
-                     │
-          [Streamlit Dashboard]
-                     │
-        ┌────────────▼────────────┐
-        │   Sales & Customer KPIs │
-        └─────────────────────────┘
+cd docker/
+docker compose down --remove-orphans
+docker compose run --rm airflow-init
+docker compose up --build
 ```
----
 
-## 🧪 How to Run (coming soon...)
+### 2️⃣ Open Airflow UI at http://localhost:8080
 
-- `docker-compose up` to start Airflow and Spark locally
-- Run DAG to orchestrate data flow from raw CSV → S3/Redshift
-- Launch Streamlit app for analytics
+### 3️⃣ Trigger DAG from Airflow interface
 
----
+### 4️⃣ Run the dashboard (in new terminal):
+```
+streamlit run dashboard/app.py
+```
 
-## 🎯 Key Skills Demonstrated
+## 📊 Dashboard Preview
 
-- End-to-end ETL design
-- Cloud-native pipeline implementation
-- Apache Airflow DAG orchestration
-- PySpark-based data cleaning & transformation
-- CI/CD readiness for production workflows
+![Architecture Diagram](https://github.com/bashoori/repo/blob/master/airflow-spark-aws-etl-pipeline/img1.png)
 
----
+## 🎯 Skills Demonstrated
 
-## 📌 Inspired By
+	•	✅ ETL Workflow Orchestration (Airflow DAGs)
+	•	✅ Distributed Data Transformation (PySpark)
+	•	✅ Scalable Cloud Storage (AWS S3, boto3, s3fs)
+	•	✅ Dashboard Development (Streamlit + Plotly)
+	•	✅ Logging, Alerts & Monitoring
+	•	✅ CI/CD and Production-Readiness with Docker
 
-This project aligns with real-world responsibilities of roles like:
 
-- **Associate Data Engineer at IBM**
-- **Cloud ETL Developer**
-- **Data Engineer (AWS, Spark, Airflow)**
+## 👩‍💻 Author
 
----
-
-## 📎 Author
-
-**Bita Ashoori** — [GitHub Portfolio](https://github.com/bashoori)  
-Helping others build smart, scalable systems with cloud and code. ✨
-
----
+Bita Ashoori
+✨ Passionate about building smart, scalable cloud solutions with Python, data, and clean architecture.
